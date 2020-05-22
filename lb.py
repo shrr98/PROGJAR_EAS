@@ -7,7 +7,7 @@ import multiprocessing as mp
 from async_server import run_server
 
 class BackendList:
-	MAX_CLIENT = 20
+	MAX_CLIENT = 1
 
 	def __init__(self):
 		self.servers=[]
@@ -84,9 +84,9 @@ class Server(asyncore.dispatcher):
 		asyncore.dispatcher.__init__(self)
 		self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.set_reuse_addr()
-		self.bind(('',portnumber))
+		self.bind(('127.0.0.1',portnumber))
 		self.received_req = 0
-		self.listen(50)
+		self.listen(5)
 		self.bservers = BackendList()
 		logging.warning("load balancer running on port {}" . format(portnumber))
 

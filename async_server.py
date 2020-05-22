@@ -7,10 +7,11 @@ from http import HttpServer
 
 httpserver = HttpServer()
 rcv = ""
+Num_Client = None
 
 class ProcessTheClient(asyncore.dispatcher_with_send):
 	def handle_read(self):
-		global rcv
+		global Num_Client, rcv
 		data = self.recv(1024)
 		if data:
 			d = data.decode()
@@ -29,9 +30,12 @@ class ProcessTheClient(asyncore.dispatcher_with_send):
 				rcv = ""
 				self.close()
 
-		#self.send('HTTP/1.1 200 OK \r\n\r\n'.encode())
+		# self.send('HTTP/1.1 200 OK \r\n\r\n'.encode())
 			#self.send("{}" . format(httpserver.proses(d)))
 		self.close()
+		Num_Client.value-=1
+		logging.warning('CONN CLOSED')
+
 
 class Server(asyncore.dispatcher):
 	def __init__(self, num_client, portnumber):
@@ -40,7 +44,7 @@ class Server(asyncore.dispatcher):
 		self.portnumber = portnumber
 		self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.set_reuse_addr()
-		self.bind(('',portnumber))
+		self.bind(('127.0.0.1',portnumber))
 		self.listen(50)
 		logging.warning("running on port {}" . format(portnumber))
 
@@ -51,13 +55,16 @@ class Server(asyncore.dispatcher):
 			sock, addr = pair
 			logging.warning("connection from {} | {} NUM CLIENT: {}" . format(repr(addr), self.portnumber, self.num_client.value))
 			handler = ProcessTheClient(sock)
+		logging.warning('APAKAH CLOSED?')
 
 	def handle_close(self):
 			self.num_client.value = 0
 			logging.warning('{} closed'.format(self.portnumber))
 
 def run_server(num_client, port_number):
+	global Num_Client
 	logging.warning('CREATING SERVER {}'.format(port_number))
+	Num_Client = num_client
 	svr = Server(num_client, port_number)
 	logging.warning('SERVER CREATED {}'.format(port_number))
 	asyncore.loop()

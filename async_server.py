@@ -55,7 +55,6 @@ class Server(asyncore.dispatcher):
 			sock, addr = pair
 			logging.warning("connection from {} | {} NUM CLIENT: {}" . format(repr(addr), self.portnumber, self.num_client.value))
 			handler = ProcessTheClient(sock)
-		logging.warning('APAKAH CLOSED?')
 
 	def handle_close(self):
 			self.num_client.value = 0

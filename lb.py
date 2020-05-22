@@ -32,7 +32,6 @@ class BackendList:
 		is_ready = True
 		current = self.get_current()
 		if current<0:
-			logging.warning('TAMBAH WORKER LUR')
 			current = len(self.servers)
 			self.add_server()
 			is_ready = False
@@ -92,7 +91,6 @@ class Server(asyncore.dispatcher):
 
 	def handle_accept(self):
 		self.received_req += 1
-		logging.warning('RECEIVED REQ : {}'.format(self.received_req))
 		pair = self.accept()
 		if pair is not None:
 			sock, addr = pair
